@@ -1,0 +1,37 @@
+﻿@page "/stripe"
+
+@using StripeCheckout.Data
+@using StripeCheckout.Models
+@using StripeCheckout.Services
+@using global::Stripe.Checkout
+@inject IStripeCheckoutSessionService _checkoutSessionService
+@inject NavigationManager NavigationManager
+@inject StripeConfig config;
+
+<h1>Stripe Checkout</h1>
+
+<p>This component demonstrates making a payment with Stripe.</p>
+
+@if (session == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<button type="submit" @onclick="onClick">Checkout</button>
+}
+
+@code
+{
+	Session session = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		session = await _checkoutSessionService.CreateCheckoutSession(config.CustomerId, config.PriceId);
+	}
+
+	public void onClick()
+	{
+		NavigationManager.NavigateTo($"{session.Url}");
+	}
+}
